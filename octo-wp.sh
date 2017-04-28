@@ -71,21 +71,21 @@ else
 
 	# create a new branch from master
 	bot "Je me positionne sur la branche master"
-	git checkout master
+	git checkout -q master
 	bot "Je crée la branche git qui contiendra les mises à jour"
-	git checkout -b $branch_name
+	git checkout -qB $branch_name
 
 	if [ -n ${core_data[3]} ]
 	then	
 		# Update core
 		bot "Je met WordPress est à jour"
-		wp core upgrade
+		wp core upgrade --quiet
 	fi
 
 	if [ -n ${theme_data[4]} ]
 	then
-		# update thêmes
-		bot "Je vérifie que vos thêmes sont à jour"
+		# update themes
+		bot "Je vérifie que vos thèmes sont à jour"
 		for theme in $(wp theme list --update=available --field=name)
 			do
 				data=($(wp theme update $theme --dry-run))
@@ -94,8 +94,8 @@ else
 				current_version=${data[9]}
 				available_version=${data[10]}
 				bot "Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
-				wp theme update $theme
-				git add . && git commit -m "[Octo] Update of $theme theme from version $current_version to version $available_version"
+				wp theme update $theme --quiet
+				git add . && git commit -mq "[Octo] Update of $theme theme from version $current_version to version $available_version"
 		done
 	fi
 
@@ -111,8 +111,8 @@ else
 				current_version=${data[9]}
 				available_version=${data[10]}
 				bot "Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
-				wp plugin update $plugin
-				git add . && git commit -m "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
+				wp plugin update $plugin --quiet
+				git add . && git commit -mq "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
 		done
 	fi
 fi
