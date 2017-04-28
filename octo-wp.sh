@@ -76,10 +76,20 @@ else
 	git checkout -qB $branch_name
 
 	if [ -n ${core_data[3]} ]
-	then	
-		# Update core
-		bot "Je met WordPress est à jour"
-		wp core upgrade --quiet
+	then
+		let "updates_left=${#core_data[*]}/3-1"
+		let "current_update_index=1"
+		while [ $current_update_index -le $updates_left ]
+		do
+			# Update core
+			current_version=$(wp core version)
+			next_version=${core_data[$current_update_index*3]}
+			update_type=${core_data[$current_update_index*3+1]}
+			bot "Apply WordPress core $update_type update ($current_version=>$next_version)"
+			wp core upgrade --version=$next_version --quiet
+			git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
+			let "current_update_index+=1"
+		done
 	fi
 
 	if [ -n ${theme_data[4]} ]
@@ -95,7 +105,7 @@ else
 				available_version=${data[10]}
 				bot "Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
 				wp theme update $theme --quiet
-				git add . && git commit -mq "[Octo] Update of $theme theme from version $current_version to version $available_version"
+				git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $available_version"
 		done
 	fi
 
@@ -112,7 +122,7 @@ else
 				available_version=${data[10]}
 				bot "Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
 				wp plugin update $plugin --quiet
-				git add . && git commit -mq "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
+				git add . && git commit -qm "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
 		done
 	fi
 fi
