@@ -12,6 +12,12 @@
 # date of today
 today=$(date +%g%m%d)
 
+# Branch prefix
+branch_prefix="updates/octo"
+
+# Branch name
+branch="${branch_prefix}-${today}"
+
 # end VARS ---
 
 
@@ -58,7 +64,7 @@ echo -e "Je vais mettre à jour votre site : ${cyan}$2${normal}"
 bot "Je me positionne sur la branche master"
 git checkout master
 bot "Je crée la branche git qui contiendra les mises à jour"
-git checkout -b update/$today
+git checkout -b $branch
 
 # Update core
 bot "Je vérifie que WordPress est à jour"
