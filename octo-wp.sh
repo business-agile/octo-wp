@@ -44,10 +44,15 @@ function line {
   echo " "
 }
 
-# Octo has something to say
-function bot {
+# Octo begin a new subject
+function bot_title {
   line
   echo -e "${blue}${bold}(Octo)  $1 ${normal}"
+}
+
+# Octo has something to say
+function bot_text {
+  echo -e "${blue}        $1 ${normal}"
 }
 
 #  ==============================
@@ -55,8 +60,8 @@ function bot {
 #  ==============================
 
 # Welcome !
-bot "${blue}${bold}Bonjour ! Je suis Octo.${normal}"
-echo -e "Regardons si votre site a besoin que j'intervienne : ${cyan}$2${normal}"
+bot_title "${blue}${bold}Bonjour ! Je suis Octo.${normal}"
+bot_title "Regardons si votre site a besoin que j'intervienne : ${cyan}$2${normal}"
 
 # Listing of ocre, themes and plugins data
 core_data=($(wp core check-update))
@@ -65,14 +70,14 @@ plugin_data=($(wp plugin list --update=available))
 # Test if maintenances actions are available
 if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
-	bot "Excellent! Votre site est parfaitement à jour. Au revoir"
+	bot_title"Excellent! Votre site est parfaitement à jour. Au revoir"
 else
-	bot "Des mises à jour sont disponibles! Je vous les installe immédiatement!"
+	bot_title"Des mises à jour sont disponibles! Je vous les installe immédiatement!"
 
 	# create a new branch from master
-	bot "Je me positionne sur la branche master"
+	bot_title"Je me positionne sur la branche master"
 	git checkout -q master
-	bot "Je crée la branche git qui contiendra les mises à jour"
+	bot_title"Je crée la branche git qui contiendra les mises à jour"
 	git checkout -qB $branch_name
 
 	if [ -n ${core_data[3]} ]
@@ -85,7 +90,7 @@ else
 			current_version=$(wp core version)
 			next_version=${core_data[$current_update_index*3]}
 			update_type=${core_data[$current_update_index*3+1]}
-			bot "Apply WordPress core $update_type update ($current_version=>$next_version)"
+			bot_title"Apply WordPress core $update_type update ($current_version=>$next_version)"
 			wp core upgrade --version=$next_version --quiet
 			git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
 			let "current_update_index+=1"
@@ -95,7 +100,7 @@ else
 	if [ -n ${theme_data[4]} ]
 	then
 		# update themes
-		bot "Je vérifie que vos thèmes sont à jour"
+		bot_title"Je vérifie que vos thèmes sont à jour"
 		for theme in $(wp theme list --update=available --field=name)
 			do
 				data=($(wp theme update $theme --dry-run))
@@ -103,7 +108,7 @@ else
 				status=${data[8]}
 				current_version=${data[9]}
 				available_version=${data[10]}
-				bot "Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
+				bot_title"Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
 				wp theme update $theme --quiet
 				git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $available_version"
 		done
@@ -112,7 +117,7 @@ else
 	if [ -n ${plugin_data[4]} ]
 	then
 		# update plugins
-		bot "Je vérifie que vos plugins sont à jour"
+		bot_title"Je vérifie que vos plugins sont à jour"
 		for plugin in $(wp plugin list --update=available --field=name)
 			do
 				data=($(wp plugin update $plugin --dry-run))
@@ -120,7 +125,7 @@ else
 				status=${data[8]}
 				current_version=${data[9]}
 				available_version=${data[10]}
-				bot "Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
+				bot_title"Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
 				wp plugin update $plugin --quiet
 				git add . && git commit -qm "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
 		done
