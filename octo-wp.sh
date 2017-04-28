@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Octo
-# Automatize your WordPress updates
+# Octo for WordPress
+# Automatize your WordPress management
 #
 # Created by @bibzz (alexandre.berrebi@businessagile.eu)
 # Inspired by @maximebj (maxime@smoothie-creative.com)
@@ -16,11 +16,9 @@ today=$(date +%g%m%d)
 branch_prefix="octo-update"
 
 # Branch name
-branch="${branch_prefix}/${today}"
+branch_name="${branch_prefix}/${today}"
 
 # end VARS ---
-
-
 
 
 #  ===============
@@ -58,50 +56,63 @@ function bot {
 
 # Welcome !
 bot "${blue}${bold}Bonjour ! Je suis Octo.${normal}"
-echo -e "Je vais mettre à jour votre site : ${cyan}$2${normal}"
+echo -e "Regardons si votre site a besoin que j'intervienne : ${cyan}$2${normal}"
 
-# create a new branch from master
-bot "Je me positionne sur la branche master"
-git checkout master
-bot "Je crée la branche git qui contiendra les mises à jour"
-git checkout -b $branch
+# Listing of ocre, themes and plugins data
+core_data=($(wp core check-update))
+theme_data=($(wp theme list --update=available --dry-run))
+plugin_data=($(wp plugin list --update=available --dry-run))
+# Test if maintenances actions are available
+if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
+then
+	bot "Excellent! Votre site est parfaitement à jour. Au revoir"
+else
+	bot "Des mises à jour sont disponibles! Je vous les installe immédiatement!"
 
-# Update core
-bot "Je vérifie que WordPress est à jour"
+	# create a new branch from master
+	bot "Je me positionne sur la branche master"
+	git checkout master
+	bot "Je crée la branche git qui contiendra les mises à jour"
+	git checkout -b $branch_name
 
-# update thêmes
-bot "Je vérifie que vos thêmes sont à jour"
-for theme in $(wp theme list --update=available --field=name)
-	do
-		data=($(wp theme update $theme --dry-run))
-		theme=${data[7]}
-		status=${data[8]}
-		current_version=${data[9]}
-		available_version=${data[10]}
-		bot "Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
-		wp theme update $theme
-		git add . && git commit -m "[Octo] Update of $theme theme from version $current_version to version $available_version"
+	if [ -n ${core_data[3]} ]
+	then	
+		# Update core
+		bot "Je met WordPress est à jour"
+		wp core upgrade
+	fi
 
-done
+	if [ -n ${theme_data[4]} ]
+	then
+		# update thêmes
+		bot "Je vérifie que vos thêmes sont à jour"
+		for theme in $(wp theme list --update=available --field=name)
+			do
+				data=($(wp theme update $theme --dry-run))
+				theme=${data[7]}
+				status=${data[8]}
+				current_version=${data[9]}
+				available_version=${data[10]}
+				bot "Je mets à jour $theme (status:$status) from version $current_version to version $available_version"
+				wp theme update $theme
+				git add . && git commit -m "[Octo] Update of $theme theme from version $current_version to version $available_version"
+		done
+	fi
 
-# update plugins
-bot "Je vérifie que vos plugins sont à jour"
-for plugin in $(wp plugin list --update=available --field=name)
-	do
-		data=($(wp plugin update $plugin --dry-run))
-		plugin=${data[7]}
-		status=${data[8]}
-		current_version=${data[9]}
-		available_version=${data[10]}
-		bot "Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
-		wp plugin update $plugin
-		git add . && git commit -m "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
-
-done
-
-
-
-
-
-
-
+	if [ -n ${plugin_data[4]} ]
+	then
+		# update plugins
+		bot "Je vérifie que vos plugins sont à jour"
+		for plugin in $(wp plugin list --update=available --field=name)
+			do
+				data=($(wp plugin update $plugin --dry-run))
+				plugin=${data[7]}
+				status=${data[8]}
+				current_version=${data[9]}
+				available_version=${data[10]}
+				bot "Je mets à jour $plugin (status:$status) from version $current_version to version $available_version"
+				wp plugin update $plugin
+				git add . && git commit -m "[Octo] Update of $plugin plugin from version $current_version to version $available_version"
+		done
+	fi
+fi
