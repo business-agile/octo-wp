@@ -60,8 +60,8 @@ echo -e "Regardons si votre site a besoin que j'intervienne : ${cyan}$2${normal}
 
 # Listing of ocre, themes and plugins data
 core_data=($(wp core check-update))
-theme_data=($(wp theme list --update=available --dry-run))
-plugin_data=($(wp plugin list --update=available --dry-run))
+theme_data=($(wp theme list --update=available))
+plugin_data=($(wp plugin list --update=available))
 # Test if maintenances actions are available
 if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
