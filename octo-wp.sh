@@ -13,10 +13,10 @@
 today=$(date +%g%m%d)
 
 # Branch prefix
-branch_prefix="updates/octo"
+branch_prefix="octo-update"
 
 # Branch name
-branch="${branch_prefix}-${today}"
+branch="${branch_prefix}/${today}"
 
 # end VARS ---
 
