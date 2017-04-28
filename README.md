@@ -1,6 +1,6 @@
 ## Synopsis
 
-Based on the excellent Wippy project by [@maximebj](https://twitter.com/maximebj), octo for WordPress project aims to fully automatize WordPress management and git each step in specific branches.
+Based on the excellent Wippy project by @maximebj, octo for WordPress project aims to fully automatize WordPress management and git each step in specific branches.
 
 ## Code Example
 
@@ -17,5 +17,8 @@ Business Agile manages lot of WordPress websites for its customers. To limit ene
 
 ## Contributors
 
-Contributors : [@BiBzz](https://github.com/BiBzz)
+Contributors :
+- [@BiBzz](https://github.com/BiBzz)
+- [@askz](https://github.com/askz)
+
 Original idea : [@maximebj](https://twitter.com/maximebj)
