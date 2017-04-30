@@ -60,7 +60,7 @@ function bot_text {
 #  ==============================
 
 # Welcome !
-bot_title "${blue}${bold}Hi there! I'm Octo.\n        Something for me today?"
+bot_title "Hi there! I'm Octo. Something for me today?"
 
 # Listing of ocre, themes and plugins data
 core_data=($(wp core check-update))
