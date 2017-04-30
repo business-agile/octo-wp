@@ -4,11 +4,12 @@ Based on the excellent Wippy project by @maximebj, octo for WordPress project ai
 
 ## Code Example
 
-For now, the script onlly check if updates have to be done, create a branch if it's the case and commit after each update to be able to rollback. You just have to place yourself in WordPress directory and run octo-wp.sh
+
+For now, this script only check if updates have to be done, create a branch if it's the case and commit after each update to be able to rollback.
+To run this octo updates bot, you just have to specify as first parameter the WordPress directory.
 
 ```
-cd /path/to/wordpress/directory
-bash octo-wp.sh
+bash octo-wp.sh /path/to/wordpress/directory
 ```
 
 ## Motivation

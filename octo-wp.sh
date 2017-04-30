@@ -1,14 +1,18 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Octo for WordPress
 # Automatize your WordPress management
 #
 # Created by @bibzz (alexandre.berrebi@businessagile.eu)
 # Inspired by @maximebj (maxime@smoothie-creative.com)
-#
+# 
+# $1 : WordPress directory 
 
 
 # VARS 
+# Set on which directory 
+wp_dir=$1
+
 # date of today
 today=$(date +%g%m%d)
 
@@ -63,9 +67,9 @@ function bot_text {
 bot_title "Hi there! I'm Octo. Something for me today?"
 
 # Listing of ocre, themes and plugins data
-core_data=($(wp core check-update))
-theme_data=($(wp theme list --update=available))
-plugin_data=($(wp plugin list --update=available))
+core_data=($(wp core check-update --path=$1))
+theme_data=($(wp theme list --update=available --path=$1))
+plugin_data=($(wp plugin list --update=available --path=$1))
 # Test if maintenances actions are available
 if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
@@ -98,11 +102,11 @@ else
 		while [ $current_update_index -le $updates_left ]
 		do
 			# Update core
-			current_version=$(wp core version)
+			current_version=$(wp core version --path=$1)
 			next_version=${core_data[$current_update_index*3]}
 			update_type=${core_data[$current_update_index*3+1]}
 			bot_text "Apply WordPress core $update_type update ($current_version=>$next_version)"
-			wp core upgrade --version=$next_version --quiet
+			wp core upgrade --version=$next_version --path=$1 --quiet
 			bot_text "Commit this update in git"
 			git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
 			let "current_update_index+=1"
@@ -115,15 +119,15 @@ else
 	then
 		# update themes
 		bot_title "Let's continue with themes operations"
-		for theme in $(wp theme list --update=available --field=name)
+		for theme in $(wp theme list --path=$1 --update=available --field=name)
 			do
-				data=($(wp theme update $theme --dry-run))
+				data=($(wp theme update $theme --path=$1 --dry-run))
 				theme=${data[7]}
 				status=${data[8]}
 				current_version=${data[9]}
 				next_version=${data[10]}
 				bot_text "I update $theme (status:$status) from version $current_version to version $next_version"
-				wp theme update $theme --quiet
+				wp theme update $theme --path=$1 --quiet
 				bot_text "Commit this update in git"
 				git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
 				bot_text "Great! What's next?"
@@ -134,15 +138,15 @@ else
 	then
 		# update plugins
 		bot_title "Let's finish with plugins operations"
-		for plugin in $(wp plugin list --update=available --field=name)
+		for plugin in $(wp plugin list --path=$1 --update=available --field=name)
 			do
-				data=($(wp plugin update $plugin --dry-run))
+				data=($(wp plugin update $plugin --path=$1 --dry-run))
 				plugin=${data[7]}
 				status=${data[8]}
 				current_version=${data[9]}
 				next_version=${data[10]}
 				bot_text "I update $plugin (status:$status) from version $current_version to version $next_version"
-				wp plugin update $plugin --quiet
+				wp plugin update $plugin --path=$1 --quiet
 				bot_text "Commit this update in git"
 				git add . && git commit -qm "[Octo] Update of $plugin plugin from version $current_version to version $next_version"
 				bot_text "Great! What's next?"
