@@ -80,9 +80,9 @@ else
 	# create a new branch from master
 	bot_title "First, I create a new git branch to protect your amazing code"
 	bot_text "To take a good start, I start our updates branch from master"
-	git checkout -q master
+	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -q master
 	bot_text "Ready to create updates branch"
-	git checkout -qB $branch_name
+	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -qB $branch_name
 	bot_text "Updates branch is ready. Let's go for your WordPress maintenance"
 
 	if [ -n ${core_data[3]} ]
@@ -108,7 +108,7 @@ else
 			bot_text "Apply WordPress core $update_type update ($current_version=>$next_version)"
 			wp core upgrade --version=$next_version --path=$wp_dir --quiet
 			bot_text "Commit this update in git"
-			git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
+			git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
 			let "current_update_index+=1"
 			bot_text "Great! What's next?"
 		done
@@ -129,7 +129,7 @@ else
 				bot_text "I update $theme (status:$status) from version $current_version to version $next_version"
 				wp theme update $theme --path=$wp_dir --quiet
 				bot_text "Commit this update in git"
-				git add . && git commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
+				git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
 				bot_text "Great! What's next?"
 		done
 	fi
@@ -148,7 +148,7 @@ else
 				bot_text "I update $plugin (status:$status) from version $current_version to version $next_version"
 				wp plugin update $plugin --path=$wp_dir --quiet
 				bot_text "Commit this update in git"
-				git add . && git commit -qm "[Octo] Update of $plugin plugin from version $current_version to version $next_version"
+				git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of $plugin plugin from version $current_version to version $next_version"
 				bot_text "Great! What's next?"
 		done
 	fi
