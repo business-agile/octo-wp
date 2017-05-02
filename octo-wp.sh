@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Octo for WordPress
 # Automatize your WordPress management
