@@ -77,8 +77,18 @@ then
 else
 	bot_title "Some updates are in the pipe. Don't worry I'm here for that! Here we go!"
 
-	# create a new branch from master
+	# check if project is git
 	bot_title "First, I create a new git branch to protect your amazing code"
+	if [ ! -d $wp_dir/.git ]
+	then
+		bot_text "Wait, wait, wait.... YOU DON'T HAVE GIT YOUR PROJECT YET?"
+		bot_text "Don't worry, I fix this right now!"
+		cd $wp_dir
+		git init
+		cd -
+		bot_text "Git initialisation done!"
+	fi
+	# create a new branch from master
 	bot_text "To take a good start, I start our updates branch from master"
 	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -q master
 	bot_text "Ready to create updates branch"
