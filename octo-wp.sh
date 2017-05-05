@@ -118,7 +118,7 @@ else
 			bot_text "Apply WordPress core $update_type update ($current_version=>$next_version)"
 			wp core upgrade --version=$next_version --path=$wp_dir --quiet
 			bot_text "Commit this update in git"
-			git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of $theme theme from version $current_version to version $next_version"
+			git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of WordPress Core from version $current_version to version $next_version"
 			let "current_update_index+=1"
 			bot_text "Great! What's next?"
 		done
