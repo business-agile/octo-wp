@@ -73,7 +73,7 @@ plugin_data=($(wp plugin list --update=available --path=$wp_dir))
 # Test if maintenances actions are available
 if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
-	bot_title "Great! Your WordPress is perfectly updated (I'm probably a part of this wonderful success"
+	bot_title "Great! Your WordPress is perfectly updated (I'm probably a part of this wonderful success)"
 else
 	bot_title "Some updates are in the pipe. Don't worry I'm here for that! Here we go!"
 
