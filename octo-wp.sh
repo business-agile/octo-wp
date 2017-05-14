@@ -73,14 +73,17 @@ plugin_data=($(wp plugin list --update=available --path=$wp_dir))
 # Test if maintenances actions are available
 if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
+	# If there's nothing to do, say goodbye!
 	bot_title "Great! Your WordPress is perfectly updated (I'm probably a part of this wonderful success)"
 else
-	bot_title "Some updates are in the pipe. Don't worry I'm here for that! Here we go!"
+	# If there's some updates, begin octo's work
+	bot_title "There's some updates in the pipe. Don't worry I'm here for that! Here we go!"
 
 	# check if project is git
 	bot_title "First, I create a new git branch to protect your amazing code"
 	if [ ! -d $wp_dir/.git ]
 	then
+		# If wordpress directory isn't under git yet, initialize git
 		bot_text "Wait, wait, wait.... YOU DON'T HAVE GIT YOUR PROJECT YET?"
 		bot_text "Don't worry, I fix this right now!"
 		cd $wp_dir
@@ -95,6 +98,7 @@ else
 	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -qB $branch_name
 	bot_text "Updates branch is ready. Let's go for your WordPress maintenance"
 
+	# CORE MAINTENANCE
 	if [ -n ${core_data[3]} ]
 	then
 		bot_title "Let's begin with WordPress core operations"
@@ -125,6 +129,7 @@ else
 	fi
 	bot_text "WordPress core is now up to date"
 
+	# THEMES MAINTENANCE
 	if [ -n ${theme_data[4]} ]
 	then
 		# update themes
@@ -144,6 +149,7 @@ else
 		done
 	fi
 
+	# PLUGINS MAINTENANCE
 	if [ -n ${plugin_data[4]} ]
 	then
 		# update plugins
