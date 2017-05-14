@@ -66,6 +66,14 @@ function bot_text {
 # Welcome !
 bot_title "Hi there! I'm Octo. Something for me today?"
 
+# Check if WordPress is installed
+if ! $(wp core is-installed 2> /dev/null);
+then
+	bot_title "Sorry dude! I can't work if WordPress isn't installed."
+	bot_text "I quit!"
+	exit
+fi
+
 # Listing of ocre, themes and plugins data
 core_data=($(wp core check-update --path=$wp_dir))
 theme_data=($(wp theme list --update=available --path=$wp_dir))
