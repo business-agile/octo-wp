@@ -74,7 +74,7 @@ then
 	exit
 fi
 
-# Listing of ocre, themes and plugins data
+# Listing of core, themes and plugins data
 core_data=($(wp core check-update --path=$wp_dir))
 theme_data=($(wp theme list --update=available --path=$wp_dir))
 plugin_data=($(wp plugin list --update=available --path=$wp_dir))
@@ -177,3 +177,6 @@ else
 		done
 	fi
 fi
+
+# Bye Bye
+bot_title "It was a big day today... And we handle it together like heroes!"
