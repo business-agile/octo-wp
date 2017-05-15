@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Octo for WordPress
 # Automatize your WordPress management
@@ -79,7 +79,10 @@ core_data=($(wp core check-update --path=$wp_dir))
 theme_data=($(wp theme list --update=available --path=$wp_dir))
 plugin_data=($(wp plugin list --update=available --path=$wp_dir))
 # Test if maintenances actions are available
-if [ -z ${core_data[3]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
+# Test 1: Is there core update? (core_data will always output something, so we test which output is)
+# Test 2: Is there theme update?
+# Test 3: Is there plugin update?
+if [ ${core_data[0]} == "Success:" ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
 	# If there's nothing to do, say goodbye!
 	bot_title "Great! Your WordPress is perfectly updated (I'm probably a part of this wonderful success)"
@@ -107,7 +110,7 @@ else
 	bot_text "Updates branch is ready. Let's go for your WordPress maintenance"
 
 	# CORE MAINTENANCE
-	if [ -n ${core_data[3]} ]
+	if [ ${core_data[0]} != "Success:" ]
 	then
 		bot_title "Let's begin with WordPress core operations"
 		# set up local variables
