@@ -13,6 +13,14 @@
 # Set on which directory 
 wp_dir=$1
 
+# Set initial branch
+initial_branch=$2
+## If second arg isn't passed, default value is "master"
+if [ -z $initial_branch ]
+then
+	initial_branch=master
+fi
+
 # date of today
 today=$(date +%g%m%d)
 
@@ -104,9 +112,9 @@ else
 		cd -
 		bot_text "Git initialisation done!"
 	fi
-	# create a new branch from master
-	bot_text "To take a good start, I start our updates branch from master"
-	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -q master
+	# create a new branch from initial branch
+	bot_text "To take a good start, I start our updates branch from initial branch"
+	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -q $initial_branch
 	bot_text "Ready to create updates branch"
 	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -qB $branch_name
 	bot_text "Updates branch is ready. Let's go for your WordPress maintenance"
