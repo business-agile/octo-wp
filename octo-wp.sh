@@ -113,7 +113,7 @@ else
 		bot_text "Git initialisation done!"
 	fi
 	# create a new branch from initial branch
-	bot_text "To take a good start, I start our updates branch from initial branch"
+	bot_text "To take a good start, I start our updates branch from branch $initial_branch"
 	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -q $initial_branch
 	bot_text "Ready to create updates branch"
 	git --git-dir=$wp_dir/.git --work-tree=$wp_dir checkout -qB $branch_name
