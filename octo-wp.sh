@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Octo for WordPress
 # Automatize your WordPress management
@@ -76,13 +76,15 @@ fi
 
 # Listing of core, themes and plugins data
 core_data=($(wp core check-update --path=$wp_dir))
+language_data=($(wp core language list --update=available --path=$wp_dir))
 theme_data=($(wp theme list --update=available --path=$wp_dir))
 plugin_data=($(wp plugin list --update=available --path=$wp_dir))
 # Test if maintenances actions are available
-# Test 1: Is there core update? (core_data will always output something, so we test which output is)
-# Test 2: Is there theme update?
-# Test 3: Is there plugin update?
-if [ ${core_data[0]} == "Success:" ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
+	# Test 1: Is there core update? (core_data will always output something, so we test which output is)
+	# Test 2: Is there language update?
+	# Test 3: Is there theme update?
+	# Test 4: Is there plugin update?
+if [ ${core_data[0]} == "Success:" ] && [ -z ${language_data[6]} ] && [ -z ${theme_data[4]} ] && [ -z ${plugin_data[4]} ]
 then
 	# If there's nothing to do, say goodbye!
 	bot_title "Great! Your WordPress is perfectly updated (I'm probably a part of this wonderful success)"
@@ -114,28 +116,36 @@ else
 	then
 		bot_title "Let's begin with WordPress core operations"
 		# set up local variables
-		let "updates_left=${#core_data[*]}/3-1"
+		if [ ${core_data[0]} != "Success:" ]
+		then
+			let "core_updates_left=${#core_data[*]}/3-1"
+		else
+			core_updates_left=0
+		fi
 		let "current_update_index=1"
 		# Octo announce how many updates will be applied
-		if [ $updates_left -gt 0 ]
+		if [ $updates_left -gt 1 ]
 		then
-			bot_text "I'll apply $updates_left updates"
+			bot_text "I'll apply $core_updates_left core updates"
 		else
-			bot_text "I'll apply update"
+			bot_text "I'll apply the last core update"
 		fi
-		# Apply updates
-		while [ $current_update_index -le $updates_left ]
-		do
-			# Update core
-			current_version=$(wp core version --path=$wp_dir)
-			next_version=${core_data[$current_update_index*3]}
-			update_type=${core_data[$current_update_index*3+1]}
-			bot_text "Apply WordPress core $update_type update ($current_version=>$next_version)"
-			wp core upgrade --version=$next_version --path=$wp_dir --quiet
-			bot_text "Commit this update in git"
-			git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of WordPress Core from version $current_version to version $next_version"
-			let "current_update_index+=1"
-			bot_text "Great! What's next?"
+		# Apply core updates
+		while [ $current_update_index -le $core_updates_left ]
+		do	
+			if [ ${core_data[0]} != "Success:" ]
+			then
+				# Update core
+				current_version=$(wp core version --path=$wp_dir)
+				next_version=${core_data[$current_update_index*3]}
+				update_type=${core_data[$current_update_index*3+1]}
+				bot_text "Apply WordPress core $update_type update from version $current_version to version $next_version"
+				wp core upgrade --version=$next_version --path=$wp_dir --quiet
+				bot_text "Commit this update in git"
+				git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of WordPress Core from version $current_version to version $next_version"
+				let "current_update_index+=1"
+				bot_text "Great! What's next?"
+			fi
 		done
 	fi
 	bot_text "WordPress core is now up to date"
@@ -179,6 +189,38 @@ else
 				bot_text "Great! What's next?"
 		done
 	fi
+
+	if [ -n ${language_data[6]} ]
+	then
+		bot_title "I've almost finish, just handle languages"
+		# set up local variables
+		let "language_updates_left=${#language_data[*]}/6-1"
+		let "current_update_index=1"
+		# Octo announce how many updates will be applied
+		if [ $language_updates_left -gt 1 ]
+		then
+			bot_text "I'll apply $language_updates_left core updates"
+		else
+			bot_text "I'll apply the last core update"
+		fi
+		# Apply language updates
+		for language in $(wp core language list --path=$wp_dir --update=available --field=language)
+			do
+				data=($(wp core language list --path=$wp_dir))
+				language=${data[6]}
+				english_name="${data[7]} ${data[8]}"
+				native_name=${data[9]}
+				status=${data[10]}
+				updated_date="${data[12]} ${data[13]}"
+				bot_text "I update $english_name (status:$status) to last version ($updated_date)"
+				wp core language update --path=$wp_dir --quiet
+				bot_text "Commit this update in git"
+				git --git-dir=$wp_dir/.git --work-tree=$wp_dir add . && git --git-dir=$wp_dir/.git --work-tree=$wp_dir commit -qm "[Octo] Update of $english_name language to version of $updated_date"
+				bot_text "Great! What's next?"
+		done
+
+	fi
+	bot_text "WordPress core is now up to date"
 fi
 
 # Bye Bye
