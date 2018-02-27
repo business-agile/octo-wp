@@ -12,6 +12,11 @@
 # VARS 
 # Set on which directory 
 wp_dir=$1
+## If first arg isn't passed, default value is the current directory
+if [ -z $wp_dir ]
+then
+	wp_dir=$(pwd)
+fi
 
 # Set initial branch
 initial_branch=$2
