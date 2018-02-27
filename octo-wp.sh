@@ -75,7 +75,7 @@ function bot_text {
 bot_title "Hi there! I'm Octo. Something for me today?"
 
 # Check if WordPress is installed
-if ! $(wp core is-installed 2> /dev/null);
+if ! $(wp core is-installed --path=$wp_dir 2> /dev/null);
 then
 	bot_title "Sorry dude! I can't work if WordPress isn't installed."
 	bot_text "I quit!"
@@ -132,7 +132,7 @@ else
 		fi
 		let "current_update_index=1"
 		# Octo announce how many updates will be applied
-		if [ $updates_left -gt 1 ]
+		if [ $core_updates_left -gt 1 ]
 		then
 			bot_text "I'll apply $core_updates_left core updates"
 		else
