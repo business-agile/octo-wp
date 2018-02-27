@@ -124,12 +124,7 @@ else
 	then
 		bot_title "Let's begin with WordPress core operations"
 		# set up local variables
-		if [ ${core_data[0]} != "Success:" ]
-		then
-			let "core_updates_left=${#core_data[*]}/3-1"
-		else
-			core_updates_left=0
-		fi
+		let "core_updates_left=${#core_data[*]}/3-1"
 		let "current_update_index=1"
 		# Octo announce how many updates will be applied
 		if [ $core_updates_left -gt 1 ]
